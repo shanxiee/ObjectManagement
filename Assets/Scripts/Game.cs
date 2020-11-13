@@ -4,21 +4,23 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class Game : MonoBehaviour {
+public class Game : PersistableObject {
 
 	public KeyCode createKey = KeyCode.C;
 	public KeyCode newGameKey = KeyCode.N;
 	public KeyCode saveKey = KeyCode.S;
 	public KeyCode loadKey = KeyCode.L;
 
-	public Transform prefab;
-	List<Transform> objects;
+	public PersistableObject prefab;
+	public PersistentStorage storage;
+
+	List<PersistableObject> objects;
 	string savePath;
 
 	void Awake()
     {
-		objects = new List<Transform>(100);
-		savePath = Path.Combine(Application.persistentDataPath,"saveFile");
+		objects = new List<PersistableObject>(100);
+
     }
 	
 	void Update () {
@@ -32,48 +34,36 @@ public class Game : MonoBehaviour {
         }
         if (Input.GetKeyDown(saveKey))
         {
-			Save();
-        }
+			storage.Save(this);
+
+		}
         if (Input.GetKeyDown(loadKey))
         {
-			Load();
-        }
+			BeginNewGame();
+			storage.Load(this);
+		}
 
 	}
 
-    private void Save()
+    public override  void Save(GameDataWriter writer)
     {
-		using(var writer = new BinaryWriter(File.Open(savePath, FileMode.Create)))
+        writer.Writer(objects.Count);
+        for(int i = 0; i < objects.Count; i++)
         {
-			writer.Write(objects.Count);
-			for(int i = 0; i < objects.Count; i++)
-            {
-				Transform t = objects[i];
-				writer.Write(t.localPosition.x);
-				writer.Write(t.localPosition.y);
-				writer.Write(t.localPosition.z);
-			}
+            objects[i].Save(writer);
         }
     }
 
-	private void Load()
+    public override void Load(GameDataReader reader)
     {
-		BeginNewGame();
-		using (var reader = new BinaryReader(File.Open(savePath, FileMode.Open)))
-		{
-			int count = reader.ReadInt32();
-			for(int i =0;i< count; i++)
-            {
-				Vector3 p;
-				p.x = reader.ReadSingle();
-				p.y = reader.ReadSingle();
-				p.z = reader.ReadSingle();
-				Transform t = Instantiate(prefab);
-				t.localPosition = p;
-				objects.Add(t);
-			}
-		}
-	}
+        int count = reader.ReadInt();
+        for(int i = 0; i < count; i++)
+        {
+            PersistableObject o = Instantiate(prefab);
+            o.Load(reader);
+            objects.Add(o);
+        }
+    }
 
     private void BeginNewGame()
     {
@@ -86,10 +76,11 @@ public class Game : MonoBehaviour {
 
     void CreateObject()
     {
-		Transform t =Instantiate(prefab);
-		t.localPosition = UnityEngine.Random.insideUnitSphere * 5f;
-		t.localRotation = UnityEngine.Random.rotation;
-		t.localScale = Vector3.one * UnityEngine.Random.Range(0.1F, 1F);
-		objects.Add(t);
+		PersistableObject o =Instantiate(prefab);
+		Transform t = o.transform;
+        t.localPosition = UnityEngine.Random.insideUnitSphere * 5f;
+        t.localRotation = UnityEngine.Random.rotation;
+        t.localScale = Vector3.one * UnityEngine.Random.Range(0.1F, 1F);
+        objects.Add(o);
 	}
 }
