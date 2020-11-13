@@ -11,15 +11,17 @@ public class Game : PersistableObject {
 	public KeyCode saveKey = KeyCode.S;
 	public KeyCode loadKey = KeyCode.L;
 
-	public PersistableObject prefab;
+	public ShapeFactory shapeFactory;
 	public PersistentStorage storage;
 
-	List<PersistableObject> objects;
+	List<Shape> shapes;
 	string savePath;
+
+    const int saveVersion = 1;
 
 	void Awake()
     {
-		objects = new List<PersistableObject>(100);
+		shapes = new List<Shape>(100);
 
     }
 	
@@ -47,40 +49,49 @@ public class Game : PersistableObject {
 
     public override  void Save(GameDataWriter writer)
     {
-        writer.Writer(objects.Count);
-        for(int i = 0; i < objects.Count; i++)
+        writer.Writer(-saveVersion);
+        writer.Writer(shapes.Count);
+        for(int i = 0; i < shapes.Count; i++)
         {
-            objects[i].Save(writer);
+            writer.Writer(shapes[i].ShapeId);
+            shapes[i].Save(writer);
         }
     }
 
     public override void Load(GameDataReader reader)
     {
-        int count = reader.ReadInt();
+        int version = -reader.ReadInt();
+        if (version > saveVersion)
+        {
+            Debug.LogError("Unsupported future save version " + version);
+        }
+
+        int count = version<=0 ? -version : reader.ReadInt();
         for(int i = 0; i < count; i++)
         {
-            PersistableObject o = Instantiate(prefab);
-            o.Load(reader);
-            objects.Add(o);
+            int shapeId = version > 0 ? reader.ReadInt() : 0;
+            Shape instance = shapeFactory.Get(shapeId);
+            instance.Load(reader);
+            shapes.Add(instance);
         }
     }
 
     private void BeginNewGame()
     {
-		for(int i = 0; i < objects.Count; i++)
+		for(int i = 0; i < shapes.Count; i++)
         {
-			Destroy(objects[i].gameObject);
+			Destroy(shapes[i].gameObject);
         }
-		objects.Clear();
+		shapes.Clear();
     }
 
     void CreateObject()
     {
-		PersistableObject o =Instantiate(prefab);
-		Transform t = o.transform;
+        Shape instance = shapeFactory.GetRandom();
+		Transform t = instance.transform;
         t.localPosition = UnityEngine.Random.insideUnitSphere * 5f;
         t.localRotation = UnityEngine.Random.rotation;
         t.localScale = Vector3.one * UnityEngine.Random.Range(0.1F, 1F);
-        objects.Add(o);
+        shapes.Add(instance);
 	}
 }
