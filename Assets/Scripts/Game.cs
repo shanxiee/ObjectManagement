@@ -11,14 +11,21 @@ public class Game : PersistableObject {
 	public KeyCode newGameKey = KeyCode.N;
 	public KeyCode saveKey = KeyCode.S;
 	public KeyCode loadKey = KeyCode.L;
+    public KeyCode destroyKey = KeyCode.X;
 
 	public ShapeFactory shapeFactory;
 	public PersistentStorage storage;
 
 	List<Shape> shapes;
 	string savePath;
-
     const int saveVersion = 1;
+
+    public float CreationSpeed { get; set; }
+    float creationProgress,destructionProgress;
+
+    public float DestructionSpeed { get; set; }
+    
+
 
 	void Awake()
     {
@@ -31,22 +38,39 @@ public class Game : PersistableObject {
         {
 			CreateShape();
         }
-        if (Input.GetKeyDown(newGameKey))
+        else if (Input.GetKeyDown(newGameKey))
         {
 			BeginNewGame();
         }
-        if (Input.GetKeyDown(saveKey))
+        else if (Input.GetKeyDown(saveKey))
         {
 			storage.Save(this,saveVersion);
 
 		}
-        if (Input.GetKeyDown(loadKey))
+        else if (Input.GetKeyDown(loadKey))
         {
 			BeginNewGame();
 			storage.Load(this);
 		}
+        else if (Input.GetKeyDown(destroyKey))
+        {
+            DestroyShape();
+        }
 
-	}
+        creationProgress += Time.deltaTime * CreationSpeed;
+        while(creationProgress >= 1f)
+        {
+            creationProgress -= 1f;
+            CreateShape();
+        }
+
+        destructionProgress += Time.deltaTime * DestructionSpeed;
+        while(destructionProgress >= 1f)
+        {
+            destructionProgress -= 1f;
+            DestroyShape();
+        }
+    }
 
     public override  void Save(GameDataWriter writer)
     {
@@ -98,4 +122,16 @@ public class Game : PersistableObject {
         instance.SetColor(Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.25f, 1f, 1f, 1f));
         shapes.Add(instance);
 	}
+
+    void DestroyShape()
+    {
+        if (shapes.Count > 0)
+        {
+            int index = Random.Range(0, shapes.Count);
+            Destroy(shapes[index].gameObject);
+            int lastIndex = shapes.Count - 1;
+            shapes[index] = shapes[lastIndex];
+            shapes.RemoveAt(lastIndex);
+        }
+    }
 }

@@ -24,7 +24,6 @@ public class PersistentStorage : MonoBehaviour {
     {
         using(var reader = new BinaryReader(File.Open(savePath, FileMode.Open)))
         {
-
             o.Load(new GameDataReader(reader,-reader.ReadInt32()));
         }
     }
