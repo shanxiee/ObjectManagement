@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Game : PersistableObject {
 
@@ -28,7 +29,7 @@ public class Game : PersistableObject {
 	void Update () {
         if (Input.GetKeyDown(createKey))
         {
-			CreateObject();
+			CreateShape();
         }
         if (Input.GetKeyDown(newGameKey))
         {
@@ -36,7 +37,7 @@ public class Game : PersistableObject {
         }
         if (Input.GetKeyDown(saveKey))
         {
-			storage.Save(this);
+			storage.Save(this,saveVersion);
 
 		}
         if (Input.GetKeyDown(loadKey))
@@ -49,18 +50,19 @@ public class Game : PersistableObject {
 
     public override  void Save(GameDataWriter writer)
     {
-        writer.Writer(-saveVersion);
+
         writer.Writer(shapes.Count);
         for(int i = 0; i < shapes.Count; i++)
         {
             writer.Writer(shapes[i].ShapeId);
+            writer.Writer(shapes[i].MaterialId);
             shapes[i].Save(writer);
         }
     }
 
     public override void Load(GameDataReader reader)
     {
-        int version = -reader.ReadInt();
+        int version = reader.Version;
         if (version > saveVersion)
         {
             Debug.LogError("Unsupported future save version " + version);
@@ -70,7 +72,8 @@ public class Game : PersistableObject {
         for(int i = 0; i < count; i++)
         {
             int shapeId = version > 0 ? reader.ReadInt() : 0;
-            Shape instance = shapeFactory.Get(shapeId);
+            int materialId = version > 0 ? reader.ReadInt() : 0;
+            Shape instance = shapeFactory.Get(shapeId, materialId);
             instance.Load(reader);
             shapes.Add(instance);
         }
@@ -85,13 +88,14 @@ public class Game : PersistableObject {
 		shapes.Clear();
     }
 
-    void CreateObject()
+    void CreateShape()
     {
         Shape instance = shapeFactory.GetRandom();
 		Transform t = instance.transform;
         t.localPosition = UnityEngine.Random.insideUnitSphere * 5f;
         t.localRotation = UnityEngine.Random.rotation;
         t.localScale = Vector3.one * UnityEngine.Random.Range(0.1F, 1F);
+        instance.SetColor(Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.25f, 1f, 1f, 1f));
         shapes.Add(instance);
 	}
 }
