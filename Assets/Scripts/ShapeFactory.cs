@@ -14,7 +14,6 @@ public class ShapeFactory:ScriptableObject {
     [SerializeField]
     bool recycle;
 
-
     List<Shape>[] pools;
     Shape instance;
 

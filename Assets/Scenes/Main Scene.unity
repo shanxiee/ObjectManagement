@@ -43,7 +43,7 @@ RenderSettings:
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 11
-  m_GIWorkflowMode: 0
+  m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -89,7 +89,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ShowResolutionOverlay: 1
-  m_LightingDataAsset: {fileID: 112000006, guid: 026b9c3d42b3ce54e990ac709203413c,
+  m_LightingDataAsset: {fileID: 112000006, guid: c27220b3dc4dcb04ca9e9cb7c82057c8,
     type: 2}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -215,6 +215,7 @@ MonoBehaviour:
   shapeFactory: {fileID: 11400000, guid: 4a0dc894be8846d48b6799558c74ecf7, type: 2}
   storage: {fileID: 2097523180}
   levelCount: 2
+  spawnZoneOfLevel: {fileID: 0}
 --- !u!1 &51429509
 GameObject:
   m_ObjectHideFlags: 0
@@ -1021,6 +1022,47 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1449906492
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1449906494}
+  - component: {fileID: 1449906493}
+  m_Layer: 0
+  m_Name: Spawn Zone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1449906493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1449906492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40a23fab30ca1dc47830b97f0179904b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  surfaceOnly: 1
+--- !u!4 &1449906494
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1449906492}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.15, y: -5.7, z: 9.9}
+  m_LocalScale: {x: 10, y: 7, z: 3}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1823214178
 GameObject:
   m_ObjectHideFlags: 0

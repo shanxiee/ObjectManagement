@@ -13,14 +13,17 @@ public class Game : PersistableObject {
 	public KeyCode loadKey = KeyCode.L;
     public KeyCode destroyKey = KeyCode.X;
 
-	public ShapeFactory shapeFactory;
-	public PersistentStorage storage;
+    [SerializeField]
+	ShapeFactory shapeFactory;
+    [SerializeField]
+    PersistentStorage storage;
+    [SerializeField]
+    int levelCount;
 
-	List<Shape> shapes;
+    List<Shape> shapes;
 	string savePath;
     const int saveVersion = 2;
 
-    public int levelCount;
     int loadedLevelBuildIndex;
 
     public float CreationSpeed { get; set; }
@@ -28,6 +31,13 @@ public class Game : PersistableObject {
 
     public float DestructionSpeed { get; set; }
 
+    public SpawnZone spawnZoneOfLevel;
+    public static Game Instance { get; private set; }
+
+    void OnEnable()
+    {
+        Instance = this;
+    }
 
 
     void Start()
@@ -147,7 +157,7 @@ public class Game : PersistableObject {
     {
         Shape instance = shapeFactory.GetRandom();
 		Transform t = instance.transform;
-        t.localPosition = UnityEngine.Random.insideUnitSphere * 5f;
+        t.localPosition = spawnZoneOfLevel.SpawnPoint;
         t.localRotation = UnityEngine.Random.rotation;
         t.localScale = Vector3.one * UnityEngine.Random.Range(0.1F, 1F);
         instance.SetColor(Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.25f, 1f, 1f, 1f));
