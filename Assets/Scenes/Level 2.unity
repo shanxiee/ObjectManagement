@@ -141,6 +141,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd94009fab4239f4ba39b5914a1ea76a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnConfig:
+    movementDirection: 2
+    speed:
+      min: 2
+      max: 5
   surfaceOnly: 1
 --- !u!4 &482129818
 Transform:

@@ -21,14 +21,6 @@ public class GameLevel : PersistableObject {
         }
     }
 
-    public Vector3 SpawnPoint
-    {
-        get
-        {
-            return spawnZone.SpawnPoint;
-        }
-    }
-
     public override void Save(GameDataWriter writer)
     {
         writer.Writer(persistableObjects.Length);
@@ -45,5 +37,9 @@ public class GameLevel : PersistableObject {
         {
             persistableObjects[i].Load(reader);
         }
+    }
+
+    public void ConfigureSpawn(Shape shape){
+        spawnZone.ConfigureSpawn(shape);
     }
 }

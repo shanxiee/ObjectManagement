@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Shape:PersistableObject  {
+public class Shape : PersistableObject
+{
 
     MeshRenderer meshRenderer;
     int shapeId = int.MinValue;
+    public Vector3 AngularVelocity { get; set; }
+    public Vector3 Velocity { get; set; }
     public int ShapeId
     {
         get
@@ -27,7 +30,7 @@ public class Shape:PersistableObject  {
 
     public int MaterialId { get; private set; }
 
-    public void SetMaterial(Material material , int materialId)
+    public void SetMaterial(Material material, int materialId)
     {
         meshRenderer.material = material;
         MaterialId = materialId;
@@ -39,7 +42,7 @@ public class Shape:PersistableObject  {
     public void SetColor(Color color)
     {
         this.color = color;
-        if(sharedPropertyBlock == null)
+        if (sharedPropertyBlock == null)
         {
             sharedPropertyBlock = new MaterialPropertyBlock();
         }
@@ -57,11 +60,21 @@ public class Shape:PersistableObject  {
     {
         base.Save(writer);
         writer.Writer(color);
+        writer.Writer(AngularVelocity);
+        writer.Writer(Velocity);
     }
 
     public override void Load(GameDataReader reader)
     {
         base.Load(reader);
-        SetColor( reader.Version > 0? reader.ReadColor():Color.white);
+        SetColor(reader.Version > 0 ? reader.ReadColor() : Color.white);
+        AngularVelocity = reader.Version >= 4 ? reader.ReadVector3() : Vector3.zero;
+        Velocity = reader.Version >= 4 ? reader.ReadVector3() : Vector3.zero;
+    }
+
+    public void GameUpdate()
+    {
+        transform.Rotate(AngularVelocity * Time.deltaTime);
+        transform.localPosition += Velocity * Time.deltaTime;
     }
 }
