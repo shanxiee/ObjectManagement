@@ -9,4 +9,6 @@ public class RotatingObject:PersistableObject  {
 	void FixedUpdate () {
 		transform.Rotate(angularVelocity * Time.deltaTime);
 	}
+
+	
 }
