@@ -15,21 +15,24 @@ public abstract class SpawnZone : PersistableObject
             Outward,
             Random,
         }
+        public ShapeFactory[] factories;
         public MovementDirection movementDirection;
         public FloatRange speed;
         public FloatRange angularSpeed;
         public FloatRange scale;
         public ColorRangeHSV color;
-
         public bool uniformColor;
+
     }
 
     [SerializeField]
     SpawnConfigureation spawnConfig;
 
     public abstract Vector3 SpawnPoint { get; }
-    public virtual void ConfigureSpawn(Shape shape)
+    public virtual Shape SpawnShape()
     {
+        int factoryIndex = Random.Range(0,spawnConfig.factories.Length);
+        Shape shape = spawnConfig.factories[factoryIndex].GetRandom();
         Transform t = shape.transform;
         t.localPosition = SpawnPoint;
         t.localRotation = UnityEngine.Random.rotation;
@@ -63,5 +66,6 @@ public abstract class SpawnZone : PersistableObject
                 break;
         }
         shape.Velocity = direction * spawnConfig.speed.RandomValueInRange;
+        return shape;
     }
 }

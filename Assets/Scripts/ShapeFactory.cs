@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 [CreateAssetMenu]
-public class ShapeFactory:ScriptableObject {
+public class ShapeFactory : ScriptableObject
+{
 
     [SerializeField]
     Shape[] prefabs;
@@ -19,9 +20,31 @@ public class ShapeFactory:ScriptableObject {
 
     Scene poolScene;
 
+    [System.NonSerialized]
+    int factoryId = int.MinValue;
+    public int FactoryId
+    {
+        get
+        {
+            return factoryId;
+        }
+        set
+        {
+            if (factoryId == int.MinValue && value != int.MinValue)
+            {
+                factoryId = value;
+            }
+            else
+            {
+                Debug.LogError("Not allowed to change factoryId");
+            }
+
+        }
+    }
+
     public Shape Get(int shapeId)
     {
-        Shape instance =  Instantiate(prefabs[shapeId]);
+        Shape instance = Instantiate(prefabs[shapeId]);
         instance.ShapeId = shapeId;
         return instance;
 
@@ -29,14 +52,14 @@ public class ShapeFactory:ScriptableObject {
 
     public Shape GetRandom()
     {
-        return Get(Random.Range(0, prefabs.Length),Random.Range(0,materials.Length));
+        return Get(Random.Range(0, prefabs.Length), Random.Range(0, materials.Length));
     }
 
-    public Shape Get(int shapeId = 0,int materialId = 0)
+    public Shape Get(int shapeId = 0, int materialId = 0)
     {
         if (recycle)
         {
-            if(pools == null)
+            if (pools == null)
             {
                 CreatePools();
             }
@@ -51,6 +74,7 @@ public class ShapeFactory:ScriptableObject {
             else
             {
                 instance = Instantiate(prefabs[shapeId]);
+                instance.OriginFactory = this;
                 instance.ShapeId = shapeId;
                 SceneManager.MoveGameObjectToScene(instance.gameObject, poolScene);
             }
@@ -73,7 +97,7 @@ public class ShapeFactory:ScriptableObject {
             if (poolScene.isLoaded)
             {
                 GameObject[] rootObjects = poolScene.GetRootGameObjects();
-                for(int i = 0; i < rootObjects.Length; i++)
+                for (int i = 0; i < rootObjects.Length; i++)
                 {
                     Shape pooledShape = rootObjects[i].GetComponent<Shape>();
                     if (!pooledShape.gameObject.activeSelf)
@@ -86,18 +110,22 @@ public class ShapeFactory:ScriptableObject {
         }
         poolScene = SceneManager.CreateScene(name);
         pools = new List<Shape>[prefabs.Length];
-        for(int i = 0; i < pools.Length; i++)
+        for (int i = 0; i < pools.Length; i++)
         {
             pools[i] = new List<Shape>();
         }
-
     }
 
     public void Reclaim(Shape shapeToRecycle)
     {
+        if (shapeToRecycle.OriginFactory != this)
+        {
+            Debug.LogError("Tried to reclaim shape with wrong faactory");
+            return;
+        }
         if (recycle)
         {
-            if(pools == null)
+            if (pools == null)
             {
                 CreatePools();
             }

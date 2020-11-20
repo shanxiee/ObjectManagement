@@ -38,6 +38,27 @@ public class Shape : PersistableObject
             return colors.Length;
         }
     }
+
+    ShapeFactory originFactory;
+    public ShapeFactory OriginFactory
+    {
+        get
+        {
+            return originFactory;
+        }
+        set
+        {
+            if (originFactory == null)
+            {
+                originFactory = value;
+            }
+            else
+            {
+                Debug.LogError("Not allowed to change origin factory");
+            }
+    }
+    }
+
     private void Awake()
     {
         colors = new Color[meshRenderers.Length];
@@ -132,11 +153,13 @@ public class Shape : PersistableObject
             }
         }
     }
-
-
     public void GameUpdate()
     {
         transform.Rotate(AngularVelocity * Time.deltaTime);
         transform.localPosition += Velocity * Time.deltaTime;
+    }
+    
+    public void Recycle(){
+        OriginFactory.Reclaim(this);
     }
 }

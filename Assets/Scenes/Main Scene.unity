@@ -212,12 +212,14 @@ MonoBehaviour:
   saveKey: 115
   loadKey: 108
   destroyKey: 120
-  shapeFactory: {fileID: 11400000, guid: 4a0dc894be8846d48b6799558c74ecf7, type: 2}
   storage: {fileID: 2097523180}
   levelCount: 4
   reseedOnLoad: 0
   creationSpeedSlider: {fileID: 946014659}
   destructionSpeedSlider: {fileID: 1225862801}
+  shapeFactories:
+  - {fileID: 11400000, guid: 740a59b4fc1c5874a8de88427c2a7dd4, type: 2}
+  - {fileID: 11400000, guid: 4a0dc894be8846d48b6799558c74ecf7, type: 2}
 --- !u!1 &51429509
 GameObject:
   m_ObjectHideFlags: 0
