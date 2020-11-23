@@ -25,7 +25,7 @@ public class Game : PersistableObject
 
     List<Shape> shapes;
     string savePath;
-    const int saveVersion = 5;
+    const int saveVersion = 6;
 
     int loadedLevelBuildIndex;
 
