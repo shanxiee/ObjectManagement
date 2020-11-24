@@ -39,6 +39,7 @@ public class Shape : PersistableObject
         }
     }
 
+    public float Age{get;private set;}
     ShapeFactory originFactory;
     public ShapeFactory OriginFactory
     {
@@ -109,6 +110,7 @@ public class Shape : PersistableObject
         {
             writer.Writer(colors[i]);
         }
+        writer.Writer(Age);
         writer.Writer(behaviorList.Count);
         for (int i = 0; i < behaviorList.Count; i++)
         {
@@ -131,10 +133,13 @@ public class Shape : PersistableObject
 
         if (reader.Version >= 6)
         {
+            Age = reader.ReadInt();
             int behaviorCount = reader.ReadInt();
             for (int i = 0; i < behaviorCount; i++)
             {
-                AddBehavior((ShapeBehaviorType)reader.ReadInt()).Load(reader);
+                ShapeBehavior behavior =  ((ShapeBehaviorType)reader.ReadInt()).GetInstance();
+                behaviorList.Add(behavior);
+                behavior.Load(reader);
             }
         }
         else if (reader.Version >= 4)
@@ -170,6 +175,7 @@ public class Shape : PersistableObject
     }
     public void GameUpdate()
     {
+        Age +=Time.deltaTime;
         for (int i = 0; i < behaviorList.Count; i++)
         {
             behaviorList[i].GameUpdate(this);
@@ -178,6 +184,7 @@ public class Shape : PersistableObject
 
     public void Recycle()
     {
+        Age = 0f;
         for (int i = 0; i < behaviorList.Count; i++)
         {
             behaviorList[i].Recycle();
@@ -191,18 +198,5 @@ public class Shape : PersistableObject
         T behavior =  ShapeBehaviorPool<T>.Get();
         behaviorList.Add(behavior);
         return behavior;
-    }
-
-    ShapeBehavior AddBehavior(ShapeBehaviorType type)
-    {
-        switch (type)
-        {
-            case ShapeBehaviorType.Movement:
-                return AddBehavior<MovementShapeBehavior>();
-            case ShapeBehaviorType.Rotation:
-                return AddBehavior<RotationShapeBehavior>();
-        }
-        Debug.LogError("Forgot to support " + type);
-        return null;
     }
 }

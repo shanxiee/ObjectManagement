@@ -183,10 +183,10 @@ public class Game : PersistableObject
             {
                 Random.state = state;
             }
-            creationSpeedSlider.value = CreationSpeed = reader.ReadFloeat();
-            creationProgress = reader.ReadFloeat();
-            destructionSpeedSlider.value = DestructionSpeed = reader.ReadFloeat();
-            destructionProgress = reader.ReadFloeat();
+            creationSpeedSlider.value = CreationSpeed = reader.ReadFloat();
+            creationProgress = reader.ReadFloat();
+            destructionSpeedSlider.value = DestructionSpeed = reader.ReadFloat();
+            destructionProgress = reader.ReadFloat();
         }
 
         yield return LoadLevel(version < 2 ? 1 : reader.ReadInt());

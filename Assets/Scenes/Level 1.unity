@@ -211,11 +211,11 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 4a0dc894be8846d48b6799558c74ecf7, type: 2}
     movementDirection: 0
     speed:
-      min: 2
-      max: 10
+      min: 0
+      max: 0
     angularSpeed:
-      min: 5
-      max: 20
+      min: 0
+      max: 0
     scale:
       min: 0.1
       max: 1
@@ -230,7 +230,14 @@ MonoBehaviour:
         min: 0
         max: 1
     uniformColor: 0
-  surfaceOnly: 1
+    oscillationDirection: 2
+    oscillationAmplitude:
+      min: 0.1
+      max: 1
+    oscillationFrequency:
+      min: 1
+      max: 1
+  surfaceOnly: 0
 --- !u!4 &500153356
 Transform:
   m_ObjectHideFlags: 0
@@ -239,7 +246,7 @@ Transform:
   m_GameObject: {fileID: 500153354}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.15, y: -5.7, z: 9.9}
-  m_LocalScale: {x: 5, y: 2, z: 4}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1

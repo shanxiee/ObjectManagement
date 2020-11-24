@@ -13,7 +13,7 @@ public class GameDataReader  {
         this.Version = version;
     }
 
-    public float ReadFloeat()
+    public float ReadFloat()
     {
         return reader.ReadSingle();
     }

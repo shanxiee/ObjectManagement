@@ -30,3 +30,4 @@ public static class ShapeBehaviorPool<T> where T : ShapeBehavior, new()
         stack.Push(behavior);
     }
 }
+ 
