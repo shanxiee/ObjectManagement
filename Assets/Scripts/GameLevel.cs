@@ -39,7 +39,7 @@ public class GameLevel : PersistableObject {
         }
     }
 
-    public Shape SpawnShape(){
-        return spawnZone.SpawnShape();
+    public void SpawnShapes(){
+        spawnZone.SpawnShapes();
     }
 }

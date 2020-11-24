@@ -14,7 +14,6 @@ public class ShapeFactory : ScriptableObject
 
     [SerializeField]
     bool recycle;
-
     List<Shape>[] pools;
     Shape instance;
 
@@ -47,7 +46,6 @@ public class ShapeFactory : ScriptableObject
         Shape instance = Instantiate(prefabs[shapeId]);
         instance.ShapeId = shapeId;
         return instance;
-
     }
 
     public Shape GetRandom()
@@ -86,6 +84,7 @@ public class ShapeFactory : ScriptableObject
         }
 
         instance.SetMaterial(materials[materialId], materialId);
+        Game.Instance.AddShape(instance);
         return instance;
     }
 
