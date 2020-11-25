@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class GameDataReader  {
+public class GameDataReader
+{
     public int Version { get; }
     BinaryReader reader;
 
-    public GameDataReader(BinaryReader reader,int version)
+    public GameDataReader(BinaryReader reader, int version)
     {
         this.reader = reader;
         this.Version = version;
@@ -52,9 +53,16 @@ public class GameDataReader  {
         return value;
     }
 
+    public ShapeInstance ReadShapeInstance()
+    {
+        return new ShapeInstance(reader.ReadInt32());
+    }
+
     public Random.State ReadRandomState()
     {
         return JsonUtility.FromJson<Random.State>(reader.ReadString());
     }
+
+
 
 }

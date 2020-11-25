@@ -140,24 +140,33 @@ public class Game : PersistableObject
             destructionProgress -= 1f;
             DestroyShape();
         }
+
+        int limit = GameLevel.Current.PopulationLimit;
+        if (limit > 0)
+        {
+            while (shapes.Count > limit)
+            {
+                DestroyShape();
+            }
+        }
     }
 
     public override void Save(GameDataWriter writer)
     {
 
-        writer.Writer(shapes.Count);
-        writer.Writer(Random.state);
-        writer.Writer(CreationSpeed);
-        writer.Writer(creationProgress);
-        writer.Writer(DestructionSpeed);
-        writer.Writer(destructionProgress);
-        writer.Writer(loadedLevelBuildIndex);
+        writer.Write(shapes.Count);
+        writer.Write(Random.state);
+        writer.Write(CreationSpeed);
+        writer.Write(creationProgress);
+        writer.Write(DestructionSpeed);
+        writer.Write(destructionProgress);
+        writer.Write(loadedLevelBuildIndex);
         GameLevel.Current.Save(writer);
         for (int i = 0; i < shapes.Count; i++)
         {
-            writer.Writer(shapes[i].OriginFactory.FactoryId);
-            writer.Writer(shapes[i].ShapeId);
-            writer.Writer(shapes[i].MaterialId);
+            writer.Write(shapes[i].OriginFactory.FactoryId);
+            writer.Write(shapes[i].ShapeId);
+            writer.Write(shapes[i].MaterialId);
             shapes[i].Save(writer);
         }
     }
@@ -205,6 +214,10 @@ public class Game : PersistableObject
             Shape instance = shapeFactories[factoryId].Get(shapeId, materialId);
             instance.Load(reader);
         }
+        for (int i = 0; i < shapes.Count; i++)
+        {
+            shapes[i].ResolveShapeInstances();
+        }
     }
 
     private void BeginNewGame()
@@ -232,6 +245,7 @@ public class Game : PersistableObject
             int index = Random.Range(0, shapes.Count);
             shapes[index].Recycle();
             int lastIndex = shapes.Count - 1;
+            shapes[lastIndex].SaveIndex = index;
             shapes[index] = shapes[lastIndex];
             shapes.RemoveAt(lastIndex);
         }
@@ -252,7 +266,12 @@ public class Game : PersistableObject
 
     public void AddShape(Shape shape)
     {
+        shape.SaveIndex = shapes.Count;
         shapes.Add(shape);
     }
 
+    public Shape GetShape(int index)
+    {
+        return shapes[index];
+    }
 }

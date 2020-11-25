@@ -4,40 +4,6 @@ using UnityEngine;
 
 public abstract class SpawnZone : PersistableObject
 {
-
-    [System.Serializable]
-    public struct SpawnConfigureation
-    {
-        public enum MovementDirection
-        {
-            Forward,
-            Upward,
-            Outward,
-            Random,
-        }
-        public ShapeFactory[] factories;
-        public MovementDirection movementDirection;
-        public FloatRange speed;
-        public FloatRange angularSpeed;
-        public FloatRange scale;
-        public ColorRangeHSV color;
-        public bool uniformColor;
-
-        public MovementDirection oscillationDirection;
-        public FloatRange oscillationAmplitude;
-        public FloatRange oscillationFrequency;
-        [System.Serializable]
-        public struct SatelliteConfiguration
-        {
-            [FloatRangeSlider(0.1f, 1f)]
-            public FloatRange relativeScale;
-
-            public FloatRange orbitRadius;
-            public FloatRange orbitFrequency;
-        }
-        public SatelliteConfiguration satellite;
-    }
-
     [SerializeField]
     SpawnConfigureation spawnConfig;
 
@@ -64,7 +30,11 @@ public abstract class SpawnZone : PersistableObject
             movement.Velocity = GetDirectionVector(spawnConfig.movementDirection, t) * speed;
         }
         SetupOscillation(shape);
-        CreateSatelliteFor(shape);
+        int satelliteCount = spawnConfig.satellite.amount.RandomValueInRange;
+        for (int i = 0; i < satelliteCount; i++)
+        {
+            CreateSatelliteFor(shape);
+        }
     }
 
     Vector3 GetDirectionVector(SpawnConfigureation.MovementDirection direction, Transform t)
@@ -103,7 +73,7 @@ public abstract class SpawnZone : PersistableObject
         t.localRotation = Random.rotation;
         t.localScale = focalShape.transform.localScale * spawnConfig.satellite.relativeScale.RandomValueInRange;
         SetupColor(shape);
-        shape.AddBehavior<SatelliteShapeBehavior>().Initialize(shape,focalShape,
+        shape.AddBehavior<SatelliteShapeBehavior>().Initialize(shape, focalShape,
         spawnConfig.satellite.orbitRadius.RandomValueInRange,
         spawnConfig.satellite.orbitFrequency.RandomValueInRange);
     }

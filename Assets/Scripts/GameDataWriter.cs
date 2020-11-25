@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class GameDataWriter {
+public class GameDataWriter
+{
     BinaryWriter writer;
 
     public GameDataWriter(BinaryWriter writer)
@@ -11,17 +12,17 @@ public class GameDataWriter {
         this.writer = writer;
     }
 
-    public void Writer(float value)
+    public void Write(float value)
     {
         writer.Write(value);
     }
 
-    public void Writer(int value)
+    public void Write(int value)
     {
         writer.Write(value);
     }
 
-    public void Writer(Quaternion value)
+    public void Write(Quaternion value)
     {
         writer.Write(value.x);
         writer.Write(value.y);
@@ -29,14 +30,14 @@ public class GameDataWriter {
         writer.Write(value.w);
     }
 
-    public void Writer(Vector3 value)
+    public void Write(Vector3 value)
     {
         writer.Write(value.x);
         writer.Write(value.y);
-        writer.Write(value.z);
+        writer.Write(value.z); 
     }
 
-    public void Writer(Color value)
+    public void Write(Color value)
     {
         writer.Write(value.r);
         writer.Write(value.g);
@@ -44,9 +45,14 @@ public class GameDataWriter {
         writer.Write(value.a);
     }
 
-    public void Writer(Random.State value)
+    public void Write(Random.State value)
     {
         writer.Write(JsonUtility.ToJson(value));
+    }
+
+    public void Write(ShapeInstance value)
+    {
+        writer.Write(value.IsValid ? value.Shape.SaveIndex : -1);
     }
 
 }

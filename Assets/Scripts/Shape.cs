@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Shape : PersistableObject
 {
     [SerializeField]
@@ -29,7 +30,7 @@ public class Shape : PersistableObject
     public int MaterialId { get; private set; }
 
     List<ShapeBehavior> behaviorList = new List<ShapeBehavior>();
-    
+
     Color[] colors;
     public int ColorCount
     {
@@ -39,7 +40,9 @@ public class Shape : PersistableObject
         }
     }
 
-    public float Age{get;private set;}
+    public float Age { get; private set; }
+    public int InstanceId { get; private set; }
+    public int SaveIndex { get; set; }
     ShapeFactory originFactory;
     public ShapeFactory OriginFactory
     {
@@ -105,16 +108,16 @@ public class Shape : PersistableObject
     public override void Save(GameDataWriter writer)
     {
         base.Save(writer);
-        writer.Writer(colors.Length);
+        writer.Write(colors.Length);
         for (int i = 0; i < colors.Length; i++)
         {
-            writer.Writer(colors[i]);
+            writer.Write(colors[i]);
         }
-        writer.Writer(Age);
-        writer.Writer(behaviorList.Count);
+        writer.Write(Age);
+        writer.Write(behaviorList.Count);
         for (int i = 0; i < behaviorList.Count; i++)
         {
-            writer.Writer((int)behaviorList[i].BehaviorType);
+            writer.Write((int)behaviorList[i].BehaviorType);
             behaviorList[i].Save(writer);
         }
     }
@@ -133,11 +136,11 @@ public class Shape : PersistableObject
 
         if (reader.Version >= 6)
         {
-            Age = reader.ReadInt();
+            Age = reader.ReadFloat();
             int behaviorCount = reader.ReadInt();
             for (int i = 0; i < behaviorCount; i++)
             {
-                ShapeBehavior behavior =  ((ShapeBehaviorType)reader.ReadInt()).GetInstance();
+                ShapeBehavior behavior = ((ShapeBehaviorType)reader.ReadInt()).GetInstance();
                 behaviorList.Add(behavior);
                 behavior.Load(reader);
             }
@@ -175,16 +178,21 @@ public class Shape : PersistableObject
     }
     public void GameUpdate()
     {
-        Age +=Time.deltaTime;
+        Age += Time.deltaTime;
         for (int i = 0; i < behaviorList.Count; i++)
         {
-            behaviorList[i].GameUpdate(this);
+            if (!behaviorList[i].GameUpdate(this))
+            {
+                behaviorList[i].Recycle();
+                behaviorList.RemoveAt(i--);
+            }
         }
     }
 
     public void Recycle()
     {
         Age = 0f;
+        InstanceId += 1;
         for (int i = 0; i < behaviorList.Count; i++)
         {
             behaviorList[i].Recycle();
@@ -193,10 +201,18 @@ public class Shape : PersistableObject
         OriginFactory.Reclaim(this);
     }
 
-    public T AddBehavior<T>() where T : ShapeBehavior,new()
+    public T AddBehavior<T>() where T : ShapeBehavior, new()
     {
-        T behavior =  ShapeBehaviorPool<T>.Get();
+        T behavior = ShapeBehaviorPool<T>.Get();
         behaviorList.Add(behavior);
         return behavior;
+    }
+
+    public void ResolveShapeInstances()
+    {
+        for (int i = 0; i < behaviorList.Count; i++)
+        {
+            behaviorList[i].ResolveShapeInstances();
+        }
     }
 }

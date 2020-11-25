@@ -6,9 +6,9 @@ using UnityEngine;
 public class PersistableObject : MonoBehaviour {
     public virtual void Save (GameDataWriter writer)
     {
-        writer.Writer(transform.localPosition);
-        writer.Writer(transform.localRotation);
-        writer.Writer(transform.localScale);
+        writer.Write(transform.localPosition);
+        writer.Write(transform.localRotation);
+        writer.Write(transform.localScale);
     }
 
     public virtual void Load(GameDataReader reader)

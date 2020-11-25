@@ -39,7 +39,7 @@ public class CompositeSpawnZone : SpawnZone
 
     public override void Save(GameDataWriter writer)
     {
-        writer.Writer(nextSequentialIndex);
+        writer.Write(nextSequentialIndex); 
     }
 
     public override void Load(GameDataReader reader)

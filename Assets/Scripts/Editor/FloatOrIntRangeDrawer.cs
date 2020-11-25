@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomPropertyDrawer(typeof(FloatRange))]
-public class FloatRangeDrawer: PropertyDrawer {
+[CustomPropertyDrawer(typeof(FloatRange)),CustomPropertyDrawer(typeof(IntRange))]
+public class FloatOrIntRangeDrawer: PropertyDrawer {
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 		int originalIndentLevel = EditorGUI.indentLevel;
 		float originalLabelWidth = EditorGUIUtility.labelWidth;
@@ -21,4 +21,3 @@ public class FloatRangeDrawer: PropertyDrawer {
 		EditorGUIUtility.labelWidth = originalLabelWidth;
 	}
 }  
-
