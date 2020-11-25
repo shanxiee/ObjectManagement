@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct SpawnConfigureation
+public struct SpawnConfiguration
 {
     public enum MovementDirection
     {
@@ -27,7 +27,7 @@ public struct SpawnConfigureation
     public struct SatelliteConfiguration
     {
         public IntRange amount;
-        
+
         [FloatRangeSlider(0.1f, 1f)]
         public FloatRange relativeScale;
 
@@ -35,5 +35,13 @@ public struct SpawnConfigureation
         public FloatRange orbitFrequency;
     }
     public SatelliteConfiguration satellite;
+
+    [System.Serializable]
+    public struct LifecycleConfiguration
+    {
+        [FloatRangeSlider(0f,2f)]
+        public FloatRange growingDuration;
+    }
+    public LifecycleConfiguration lifecycle;
 }
 

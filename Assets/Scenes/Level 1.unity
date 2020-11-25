@@ -250,6 +250,10 @@ MonoBehaviour:
       orbitFrequency:
         min: 0.25
         max: 0.5
+    lifecycle:
+      growingDuration:
+        min: 0
+        max: 1
   surfaceOnly: 0
 --- !u!4 &500153356
 Transform:

@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class SpawnZone : PersistableObject
 {
     [SerializeField]
-    SpawnConfigureation spawnConfig;
+    SpawnConfiguration spawnConfig;
 
     public abstract Vector3 SpawnPoint { get; }
     public virtual void SpawnShapes()
@@ -30,22 +30,24 @@ public abstract class SpawnZone : PersistableObject
             movement.Velocity = GetDirectionVector(spawnConfig.movementDirection, t) * speed;
         }
         SetupOscillation(shape);
+        float growingDuration = spawnConfig.lifecycle.growingDuration.RandomValueInRange;
         int satelliteCount = spawnConfig.satellite.amount.RandomValueInRange;
         for (int i = 0; i < satelliteCount; i++)
         {
-            CreateSatelliteFor(shape);
+            CreateSatelliteFor(shape,growingDuration);
         }
+        SetupLifecycle(shape,growingDuration);
     }
 
-    Vector3 GetDirectionVector(SpawnConfigureation.MovementDirection direction, Transform t)
+    Vector3 GetDirectionVector(SpawnConfiguration.MovementDirection direction, Transform t)
     {
         switch (direction)
         {
-            case SpawnConfigureation.MovementDirection.Upward:
+            case SpawnConfiguration.MovementDirection.Upward:
                 return transform.up;
-            case SpawnConfigureation.MovementDirection.Outward:
+            case SpawnConfiguration.MovementDirection.Outward:
                 return (t.localPosition - transform.position).normalized;
-            case SpawnConfigureation.MovementDirection.Random:
+            case SpawnConfiguration.MovementDirection.Random:
                 return Random.onUnitSphere;
             default:
                 return transform.forward;
@@ -65,7 +67,7 @@ public abstract class SpawnZone : PersistableObject
         oscillation.Frequency = frequency;
     }
 
-    void CreateSatelliteFor(Shape focalShape)
+    void CreateSatelliteFor(Shape focalShape,float growingDuration)
     {
         int factoryIndex = Random.Range(0, spawnConfig.factories.Length);
         Shape shape = spawnConfig.factories[factoryIndex].GetRandom();
@@ -76,6 +78,15 @@ public abstract class SpawnZone : PersistableObject
         shape.AddBehavior<SatelliteShapeBehavior>().Initialize(shape, focalShape,
         spawnConfig.satellite.orbitRadius.RandomValueInRange,
         spawnConfig.satellite.orbitFrequency.RandomValueInRange);
+        SetupLifecycle(shape,growingDuration);
+    }
+
+    void SetupLifecycle(Shape shape, float growingDuration)
+    {
+        if (growingDuration > 0f)
+        {
+            shape.AddBehavior<GrowingShapeBehavior>().Initialize(shape,growingDuration);
+        }
     }
 
     void SetupColor(Shape shape)
