@@ -30,13 +30,14 @@ public abstract class SpawnZone : PersistableObject
             movement.Velocity = GetDirectionVector(spawnConfig.movementDirection, t) * speed;
         }
         SetupOscillation(shape);
-        Vector2 lifelliteCount = spawnConfig.lifecycle.RandomDurations;
+        Vector3 liftcycleDuration = spawnConfig.lifecycle.RandomDurations;
         int satelliteCount = spawnConfig.satellite.amount.RandomValueInRange;
         for (int i = 0; i < satelliteCount; i++)
         {
-            CreateSatelliteFor(shape, lifelliteCount);
+            CreateSatelliteFor(shape, spawnConfig.satellite.uniformLifecycles ?
+             liftcycleDuration : spawnConfig.lifecycle.RandomDurations);
         }
-        SetupLifecycle(shape, lifelliteCount);
+        SetupLifecycle(shape, liftcycleDuration);
     }
 
     Vector3 GetDirectionVector(SpawnConfiguration.MovementDirection direction, Transform t)
@@ -67,7 +68,7 @@ public abstract class SpawnZone : PersistableObject
         oscillation.Frequency = frequency;
     }
 
-    void CreateSatelliteFor(Shape focalShape, Vector2 lifecycleDurations)
+    void CreateSatelliteFor(Shape focalShape, Vector3 lifecycleDurations)
     {
         int factoryIndex = Random.Range(0, spawnConfig.factories.Length);
         Shape shape = spawnConfig.factories[factoryIndex].GetRandom();
@@ -81,15 +82,26 @@ public abstract class SpawnZone : PersistableObject
         SetupLifecycle(shape, lifecycleDurations);
     }
 
-    void SetupLifecycle(Shape shape, Vector2 durations)
+    void SetupLifecycle(Shape shape, Vector3 durations)
     {
         if (durations.x > 0f)
         {
-            shape.AddBehavior<GrowingShapeBehavior>().Initialize(shape, durations.x);
+            if (durations.y > 0f || durations.z > 0f)
+            {
+                shape.AddBehavior<LifecycleShapeBehavior>().Initialize(shape, durations.x, durations.y, durations.z);
+            }
+            else
+            {
+                shape.AddBehavior<GrowingShapeBehavior>().Initialize(shape, durations.x);
+            }
         }
         else if (durations.y > 0f)
         {
-            shape.AddBehavior<DyingShapeBehavior>().Initialize(shape, durations.y);
+            shape.AddBehavior<LifecycleShapeBehavior>().Initialize(shape, durations.x, durations.y, durations.z);
+        }
+        else if (durations.z > 0f)
+        {
+            shape.AddBehavior<DyingShapeBehavior>().Initialize(shape, durations.z);
         }
     }
 

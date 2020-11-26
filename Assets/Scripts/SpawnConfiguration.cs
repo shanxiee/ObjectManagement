@@ -33,6 +33,8 @@ public struct SpawnConfiguration
 
         public FloatRange orbitRadius;
         public FloatRange orbitFrequency;
+
+        public bool uniformLifecycles;
     }
     public SatelliteConfiguration satellite;
 
@@ -41,13 +43,17 @@ public struct SpawnConfiguration
     {
         [FloatRangeSlider(0f, 2f)]
         public FloatRange growingDuration;
+        [FloatRangeSlider(0f, 100f)]
+        public FloatRange adultDuraton;
         [FloatRangeSlider(0f, 2f)]
         public FloatRange dyingDuration;
-        public Vector2 RandomDurations
+        public Vector3 RandomDurations
         {
             get
             {
-                return new Vector2(growingDuration.RandomValueInRange, dyingDuration.RandomValueInRange);
+                return new Vector3(growingDuration.RandomValueInRange,
+                    adultDuraton.RandomValueInRange,
+                    dyingDuration.RandomValueInRange);
             }
         }
 
