@@ -30,13 +30,13 @@ public abstract class SpawnZone : PersistableObject
             movement.Velocity = GetDirectionVector(spawnConfig.movementDirection, t) * speed;
         }
         SetupOscillation(shape);
-        float growingDuration = spawnConfig.lifecycle.growingDuration.RandomValueInRange;
+        Vector2 lifelliteCount = spawnConfig.lifecycle.RandomDurations;
         int satelliteCount = spawnConfig.satellite.amount.RandomValueInRange;
         for (int i = 0; i < satelliteCount; i++)
         {
-            CreateSatelliteFor(shape,growingDuration);
+            CreateSatelliteFor(shape, lifelliteCount);
         }
-        SetupLifecycle(shape,growingDuration);
+        SetupLifecycle(shape, lifelliteCount);
     }
 
     Vector3 GetDirectionVector(SpawnConfiguration.MovementDirection direction, Transform t)
@@ -67,7 +67,7 @@ public abstract class SpawnZone : PersistableObject
         oscillation.Frequency = frequency;
     }
 
-    void CreateSatelliteFor(Shape focalShape,float growingDuration)
+    void CreateSatelliteFor(Shape focalShape, Vector2 lifecycleDurations)
     {
         int factoryIndex = Random.Range(0, spawnConfig.factories.Length);
         Shape shape = spawnConfig.factories[factoryIndex].GetRandom();
@@ -78,14 +78,18 @@ public abstract class SpawnZone : PersistableObject
         shape.AddBehavior<SatelliteShapeBehavior>().Initialize(shape, focalShape,
         spawnConfig.satellite.orbitRadius.RandomValueInRange,
         spawnConfig.satellite.orbitFrequency.RandomValueInRange);
-        SetupLifecycle(shape,growingDuration);
+        SetupLifecycle(shape, lifecycleDurations);
     }
 
-    void SetupLifecycle(Shape shape, float growingDuration)
+    void SetupLifecycle(Shape shape, Vector2 durations)
     {
-        if (growingDuration > 0f)
+        if (durations.x > 0f)
         {
-            shape.AddBehavior<GrowingShapeBehavior>().Initialize(shape,growingDuration);
+            shape.AddBehavior<GrowingShapeBehavior>().Initialize(shape, durations.x);
+        }
+        else if (durations.y > 0f)
+        {
+            shape.AddBehavior<DyingShapeBehavior>().Initialize(shape, durations.y);
         }
     }
 

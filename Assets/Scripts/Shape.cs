@@ -215,4 +215,9 @@ public class Shape : PersistableObject
             behaviorList[i].ResolveShapeInstances();
         }
     }
+
+    public void Die()
+    {
+        Game.Instance.Kill(this);
+    }
 }

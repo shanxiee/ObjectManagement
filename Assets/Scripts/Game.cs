@@ -24,6 +24,7 @@ public class Game : PersistableObject
     bool reseedOnLoad;
 
     List<Shape> shapes;
+    List<ShapeInstance> killList;
     string savePath;
     const int saveVersion = 6;
 
@@ -42,8 +43,10 @@ public class Game : PersistableObject
     Slider destructionSpeedSlider;
     [SerializeField]
     ShapeFactory[] shapeFactories;
+    bool inGameUpdateLoop;
 
     public static Game Instance { get; private set; }
+
     private void OnEnable()
     {
         Instance = this;
@@ -61,9 +64,9 @@ public class Game : PersistableObject
     {
         mainRandomState = Random.state;
         shapes = new List<Shape>(100);
+        killList = new List<ShapeInstance>(100);
         if (Application.isEditor)
         {
-
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {
                 Scene loadedScene = SceneManager.GetSceneAt(i);
@@ -123,10 +126,12 @@ public class Game : PersistableObject
 
     void FixedUpdate()
     {
+        inGameUpdateLoop = true;
         for (int i = 0; i < shapes.Count; i++)
         {
             shapes[i].GameUpdate();
         }
+        inGameUpdateLoop = false;
         creationProgress += Time.deltaTime * CreationSpeed;
         while (creationProgress >= 1f)
         {
@@ -149,6 +154,19 @@ public class Game : PersistableObject
                 DestroyShape();
             }
         }
+
+        if (killList.Count > 0)
+        {
+            for (int i = 0; i < killList.Count; i++)
+            {
+                if (killList[i].IsValid)
+                {
+                    KillImmediately(killList[i].Shape);
+                }
+            }
+            killList.Clear();
+        }
+
     }
 
     public override void Save(GameDataWriter writer)
@@ -242,12 +260,8 @@ public class Game : PersistableObject
     {
         if (shapes.Count > 0)
         {
-            int index = Random.Range(0, shapes.Count);
-            shapes[index].Recycle();
-            int lastIndex = shapes.Count - 1;
-            shapes[lastIndex].SaveIndex = index;
-            shapes[index] = shapes[lastIndex];
-            shapes.RemoveAt(lastIndex);
+            Shape shape = shapes[Random.Range(0, shapes.Count)];
+            KillImmediately(shape);
         }
     }
 
@@ -273,5 +287,27 @@ public class Game : PersistableObject
     public Shape GetShape(int index)
     {
         return shapes[index];
+    }
+
+    public void Kill(Shape shape)
+    {
+        if (inGameUpdateLoop)
+        {
+            killList.Add(shape);
+        }
+        else
+        {
+            KillImmediately(shape);
+        }
+    }
+
+    void KillImmediately(Shape shape)
+    {
+        int index = shape.SaveIndex;
+        shape.Recycle();
+        int lastIndex = shapes.Count - 1;
+        shapes[lastIndex].SaveIndex = index;
+        shapes[index] = shapes[lastIndex];
+        shapes.RemoveAt(lastIndex);
     }
 }

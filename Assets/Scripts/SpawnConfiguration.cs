@@ -39,8 +39,18 @@ public struct SpawnConfiguration
     [System.Serializable]
     public struct LifecycleConfiguration
     {
-        [FloatRangeSlider(0f,2f)]
+        [FloatRangeSlider(0f, 2f)]
         public FloatRange growingDuration;
+        [FloatRangeSlider(0f, 2f)]
+        public FloatRange dyingDuration;
+        public Vector2 RandomDurations
+        {
+            get
+            {
+                return new Vector2(growingDuration.RandomValueInRange, dyingDuration.RandomValueInRange);
+            }
+        }
+
     }
     public LifecycleConfiguration lifecycle;
 }
