@@ -220,6 +220,7 @@ MonoBehaviour:
   shapeFactories:
   - {fileID: 11400000, guid: 740a59b4fc1c5874a8de88427c2a7dd4, type: 2}
   - {fileID: 11400000, guid: 4a0dc894be8846d48b6799558c74ecf7, type: 2}
+  destroyDuration: 3
 --- !u!1 &51429509
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ public class DyingShapeBehavior : ShapeBehavior {
         originalScalel = shape.transform.localScale;
         this.duration = duration;
 		dyingAge = shape.Age;
+        shape.MarkAsDying();
     }
     public override ShapeBehaviorType BehaviorType
     {
