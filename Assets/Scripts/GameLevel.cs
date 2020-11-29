@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameLevel : PersistableObject
+public partial class GameLevel : PersistableObject
 {
 
     [SerializeField]
@@ -18,27 +18,38 @@ public class GameLevel : PersistableObject
 
     [SerializeField]
     SpawnZone spawnZone;
+
+
     [SerializeField]
-    PersistableObject[] persistableObjects;
+    GameLevelObject[] levelObjects;
 
     public static GameLevel Current { get; private set; }
+
+
+    public void GameUpdate()
+    {
+        for (var i = 0; i < levelObjects.Length; i++)
+        {
+            levelObjects[i].GameUpdate();
+        }
+    }
 
 
     void OnEnable()
     {
         Current = this;
-        if (persistableObjects == null)
+        if (levelObjects == null)
         {
-            persistableObjects = new PersistableObject[0];
+            levelObjects = new GameLevelObject[0];
         }
     }
 
     public override void Save(GameDataWriter writer)
     {
-        writer.Write(persistableObjects.Length);
-        for (int i = 0; i < persistableObjects.Length; i++)
+        writer.Write(levelObjects.Length);
+        for (int i = 0; i < levelObjects.Length; i++)
         {
-            persistableObjects[i].Save(writer);
+            levelObjects[i].Save(writer);
         }
     }
 
@@ -47,7 +58,7 @@ public class GameLevel : PersistableObject
         int savedCount = reader.ReadInt();
         for (int i = 0; i < savedCount; i++)
         {
-            persistableObjects[i].Load(reader);
+            levelObjects[i].Load(reader);
         }
     }
 
@@ -55,4 +66,5 @@ public class GameLevel : PersistableObject
     {
         spawnZone.SpawnShapes();
     }
+
 }

@@ -26,7 +26,7 @@ public class Game : PersistableObject
     List<Shape> shapes;
     List<ShapeInstance> killList, markAsDyingList;
     string savePath;
-    const int saveVersion = 6;
+    const int saveVersion = 7;
 
     int loadedLevelBuildIndex;
 
@@ -136,6 +136,7 @@ public class Game : PersistableObject
         {
             shapes[i].GameUpdate();
         }
+        GameLevel.Current.GameUpdate();
         inGameUpdateLoop = false;
         creationProgress += Time.deltaTime * CreationSpeed;
         while (creationProgress >= 1f)
